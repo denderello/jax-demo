@@ -1,0 +1,15 @@
+[Unit]
+Description=Redis Sidekick Example
+After=docker.service
+Requires=docker.service
+Requires=redis-heartbeat.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+Environment="IMAGE=redis"
+Environment="NAME=%p.service"
+ExecStartPre=/usr/bin/docker pull $IMAGE
+ExecStartPre=-/usr/bin/docker rm -f $NAME
+ExecStart=/usr/bin/docker run --name $NAME -p 6379:6379 $IMAGE
+ExecStop=/usr/bin/docker stop $NAME

@@ -1,0 +1,18 @@
+[Unit]
+Description=Redis Heartbeat Sidekick Example
+After=redis.service
+Requires=redis.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+Environment="IMAGE=alpine"
+Environment="NAME=%p.service"
+ExecStartPre=/usr/bin/docker pull $IMAGE
+ExecStartPre=-/usr/bin/docker rm -f $NAME
+ExecStart=/usr/bin/docker run --name $NAME $IMAGE \
+  bin/sh -c 'trap exit 0 SIGTERM; while true; do echo "Pretending to be a heartbeat!"; sleep 5; done'
+ExecStop=/usr/bin/docker stop $NAME
+
+[X-Fleet]
+MachineOf=redis.service
