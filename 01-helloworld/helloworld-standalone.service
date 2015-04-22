@@ -1,0 +1,14 @@
+[Unit]
+Description=Clojure Standalone Hello World Example
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+Environment="IMAGE=denderello/clojure-helloworld:latest"
+Environment="NAME=%p.service"
+ExecStartPre=/usr/bin/docker pull $IMAGE
+ExecStartPre=-/usr/bin/docker rm -f $NAME
+ExecStart=/usr/bin/docker run --name $NAME -p 8080:8080 $IMAGE
+ExecStop=/usr/bin/docker stop $NAME
